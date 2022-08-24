@@ -1,0 +1,9 @@
+.display {
+  font-size: 2em;
+}
+body h1{
+  position: absolute !important;
+  color: #c3c3c3;
+  font-family: sans-serif;
+  font-weight: 400;
+}
