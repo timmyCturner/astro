@@ -10,7 +10,7 @@ import { GLTFLoader } from '/astro/node_modules//three/examples/jsm/loaders/GLTF
 
      loader.load(
     	// resource URL
-    	'/assets/SPACE_Fin1.glb',
+    	'/astro/assets/SPACE_Fin1.glb',
     	// called when the resource is loaded
     	function ( gltf ) {
         console.log(gltf.scene);

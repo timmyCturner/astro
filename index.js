@@ -105,7 +105,7 @@
     function loadSpaceShip(){
       loader.load(
      	// resource URL
-     	'/assets/SPACE_Fin1.glb',
+     	'/astro/assets/SPACE_Fin1.glb',
      	// called when the resource is loaded
      	function ( gltf ) {
          console.log(gltf.scene);
@@ -120,7 +120,7 @@
   function loadLaser(){
     loader.load(
     // resource URL
-    '/assets/beam.glb',
+    '/astro/assets/beam.glb',
     // called when the resource is loaded
     function ( gltf ) {
          Ammo.laser= gltf.scene
@@ -337,7 +337,7 @@
     function loadInitAsteroid(){
       loader.load(
       // resource URL
-      '/assets/astro2.glb',
+      '/astro/assets/astro2.glb',
       // called when the resource is loaded
       function ( gltf ) {
         Belt.model = gltf.scene.clone()
