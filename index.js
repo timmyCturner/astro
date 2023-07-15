@@ -78,12 +78,31 @@
       controls.enableDamping = false;
       controls.enableZoom = false;
       controls.enablePan = false;
-      let x = 0;
-      let y = 0;
-      let z = 0;
-      Target = {
-        x,y,z
-      }
+
+
+      // Create a mesh using the geometry and material
+      Target = new THREE.Group();
+      // Create the spheres
+      const sphereRadius = 0.1;
+      const sphereGeometry = new THREE.SphereGeometry(sphereRadius, 32, 32);
+      const sphereMaterial = new THREE.MeshBasicMaterial({
+          color: 0xffffff, // Set the desired color
+          transparent: true,
+          opacity: 0.5, // Set the desired opacity (0.0 - fully transparent, 1.0 - fully opaque)
+        });
+
+      //console.log(window.innerWidth);
+
+
+      //
+      // scene.add(Target)
+
+      // Position and rotate the plane as needed
+
+
+
+      // Add the plane to the scene
+      //scene.add(Target);
       // console.log(Target);
       // //controls.screenSpacePanning = false
       // console.log(controls);
@@ -105,12 +124,12 @@
     function loadSpaceShip(){
       loader.load(
      	// resource URL
-     	'/astro/assets/SPACE_Fin1.glb',
+     	'/assets/model.glb',
      	// called when the resource is loaded
      	function ( gltf ) {
-         console.log(gltf.scene);
+         //console.log(gltf.scene);
          Ship = gltf.scene;
-         Ship.rotation.x = -Math.PI/2+.5
+         Ship.rotation.y = Math.PI
 
          //Ship.rotation.z = Math.PI
          Ship.position.y=-2
@@ -120,7 +139,7 @@
   function loadLaser(){
     loader.load(
     // resource URL
-    '/astro/assets/beam.glb',
+    '/assets/beam.glb',
     // called when the resource is loaded
     function ( gltf ) {
          Ammo.laser= gltf.scene
@@ -189,11 +208,14 @@
      }
    }
     function shipMove(){
-      Ship.rotation.x = ((mouse.y/(2*Math.PI))+(-Math.PI/2+.5))
-      Ship.rotation.z =  -(mouse.x/(Math.PI))
-      //Ship.rotation.y = (mouse.x/(2*Math.PI))
+      if (Ship){
+        Ship.rotation.x = ((mouse.y/(2*Math.PI))+(Math.PI/16))
+        Ship.rotation.z =  -(mouse.x/(Math.PI))
+        Ship.rotation.y = -(mouse.x/(2*Math.PI))-Math.PI
+      }
+
       //console.log(Ship.rotation);
-      Ship.rotation.y = (Ship.rotation.x-(Math.PI/2+.5))+(Ship.rotation.z-Math.PI)
+      //Ship.rotation.y = (Ship.rotation.x-(Math.PI/2+.5))+(Ship.rotation.z-Math.PI)
       //Ship.rotation.y = -Math.sin(mouse.x,mouse.y)/2
     }
 
@@ -246,7 +268,7 @@
           if (!intersected.object.parent.explode){
             intersected.object.parent.explode = true
             intersected.object.parent.weight = false
-            intersected.object.parent.start = clock.getElapsedTime()
+            intersected.object.parent.start = clock.getElapsedTime()+0.5
             // console.log(document.querySelector("h1 span"));
             let value = parseInt(document.querySelector("h1 span").getAttribute('value'))+100
             // console.log(value);
@@ -257,40 +279,147 @@
       }
     }
 
-    function fireLaser(){
-      const ammo = Ammo.laser.clone()
-      //belt.position.set(getRandomInt(max)-max/2,getRandomInt(max)-max/2,-getRandomInt(max)-max/2)
-      //getRandomInt(max)-max/2
-      ammo.position.set(Ship.position.x,Ship.position.y,Ship.position.z)
-      ammo.scale.set(2,2,2)
 
-      //ammo.rotation.set(Math.PI/4,Math.PI/4,0)
 
-      ammo.rotation.x = (mouse.y/(2*Math.PI))+(Math.PI/4)
-      ammo.rotation.z =  0//-(mouse.x/(Math.PI))+(Math.PI/4)
-      ammo.rotation.y = -(mouse.x/(Math.PI))+(Math.PI/4)//-Math.sin(mouse.x,mouse.y)/2
+/***
+****================Laser================
+****/
+// function fireLaser() {
+//   const ammo = Ammo.laser.clone();
+//   const targetZ = 100; // Fixed z-index for the laser's target position
+//
+//   ammo.position.copy(Ship.position);
+//   ammo.scale.set(5, 2, 5);
+//
+//   // Calculate the mouse position in normalized device coordinates (NDC)
+//   const mousePosition = new THREE.Vector3(
+//     (mouse.x / window.innerWidth) * 2 - 1,
+//     -(mouse.y / window.innerHeight) * 2 + 1,
+//     0.5
+//   );
+//
+//   // Create a raycaster from the mouse position
+//   const raycaster = new THREE.Raycaster();
+//   raycaster.setFromCamera(mousePosition, camera);
+//
+//   // Intersect the raycaster with the scene's objects
+//   const intersects = raycaster.intersectObjects(scene.children, true);
+//
+//   if (intersects.length > 0) {
+//     // Retrieve the first intersection point
+//     const intersectPoint = intersects[0].point;
+//
+//     // Set target position to the intersection point
+//     ammo.target = intersectPoint;
+//   }
+//   else{
+//
+//   }
+//
+//   Ammo.group.add(ammo);
+// }
 
-      ammo.mouse = mouse.clone()
-      //console.log(mouse);
-      Ammo.group.add(ammo)
 
+function fireLaser() {
+
+
+  const ammo = Ammo.laser.clone();
+  //
+  ammo.position.copy(Ship.position);
+  ammo.scale.set(0.25,0.25,0.25);
+  ammo.rotation.x= (mouse.y*Math.PI/8)-Math.PI/2
+
+  ammo.rotation.z = -1*mouse.x*Math.PI/4
+  //
+  // // Calculate the target position based on the mouse position
+  const zTarget = 100;
+  //let xTarget = Math.sin(mouse.x*Math.PI/4)
+  let xTarget = (mouse.x*Math.PI/4)
+  let yTarget = (mouse.y*Math.PI/8)
+  //degrees to radians
+  xTarget = xTarget * 180/(Math.PI*3/2)
+  yTarget = yTarget * 180/(Math.PI*3/2)
+
+  const targetPosition = new THREE.Vector3(
+    xTarget,
+    (yTarget),
+    -zTarget
+  );
+  ammo.target = targetPosition.normalize();
+  const intersects = raycaster.intersectObjects(scene.children, true);
+  if (intersects.length > 0) {
+      // Retrieve the first intersection point
+      const intersectPoint = intersects[0].point;
+
+      // Set target position to the intersection point
+      ammo.target = intersectPoint.normalize();
     }
+
+    //console.log(mouse,ammo.target);
+  Ammo.group.add(ammo);
+}
+
+
+
+
+
+    // function fireLaser(){
+    //   const ammo = Ammo.laser.clone()
+    //   //belt.position.set(getRandomInt(max)-max/2,getRandomInt(max)-max/2,-getRandomInt(max)-max/2)
+    //   //getRandomInt(max)-max/2
+    //   ammo.position.set(Ship.position.x,Ship.position.y,Ship.position.z)
+    //   ammo.scale.set(5,2,5)
+    //
+    //   //ammo.rotation.set(Math.PI/4,Math.PI/4,0)
+    //
+    //   ammo.rotation.x = (mouse.y/(2*Math.PI))+(Math.PI/4)
+    //   ammo.rotation.z =  0//-(mouse.x/(Math.PI))+(Math.PI/4)
+    //   ammo.rotation.y = -(mouse.x/(Math.PI))+(Math.PI/4)//-Math.sin(mouse.x,mouse.y)/2
+    //
+    //   ammo.mouse = mouse.clone()
+    //   //console.log(mouse);
+    //   Ammo.group.add(ammo)
+    //
+    // }
     /*==================Animamations=====================*/
-    function updateLasers(){
-      //console.log(Ammo);
-      const max_diff=1;
-      const t = clock.getElapsedTime()
-      for (var i =0;i<Ammo.group.children.length;i++)
-      {
-        //console.log(Ammo.group.children[i]);
-        const rotation_t = Ammo.group.children[i].rotation
-        //console.log(rotation_t);
-        Ammo.group.children[i].position.x+=Ammo.group.children[i].mouse.x/max_diff//(rotation_t.x/max_diff)
-        Ammo.group.children[i].position.y+=Ammo.group.children[i].mouse.y/max_diff
-        //Ammo.group.children[i].position.y+=(rotation_t.y/max_diff)
-        Ammo.group.children[i].position.z-=1
+
+    function updateLasers() {
+
+      const t = clock.getElapsedTime();
+      const max_diff = 0.25
+      for (let i = 0; i < Ammo.group.children.length; i++) {
+        const position_t = Ammo.group.children[i].position;
+
+        // position_t.x = Ammo.group.children[i].target.x
+        // position_t.y = Ammo.group.children[i].target.y
+        // position_t.z = Ammo.group.children[i].target.z
+
+        position_t.x += Ammo.group.children[i].target.x / max_diff;
+        position_t.y += Ammo.group.children[i].target.y / max_diff;
+        position_t.z += Ammo.group.children[i].target.z / max_diff;
       }
     }
+    // function updateLasers(){
+    //   //console.log(Ammo);
+    //   const max_diff=1;
+    //   const t = clock.getElapsedTime()
+    //   for (var i =0;i<Ammo.group.children.length;i++)
+    //   {
+    //     //console.log(Ammo.group.children[i]);
+    //     const rotation_t = Ammo.group.children[i].rotation
+    //     //console.log(rotation_t);
+    //     Ammo.group.children[i].position.x+=Ammo.group.children[i].mouse.x/max_diff//(rotation_t.x/max_diff)
+    //     Ammo.group.children[i].position.y+=Ammo.group.children[i].mouse.y/max_diff
+    //     //Ammo.group.children[i].position.y+=(rotation_t.y/max_diff)
+    //     Ammo.group.children[i].position.z-=1
+    //   }
+    // }
+
+
+
+
+
+
     function updateExplode(){
 
       if (Belt){
@@ -299,10 +428,11 @@
         for (let i=0;i<Belt.children.length;i++){
             if (Belt.children[i].explode){
               if (Belt.children[i].explode == true){
-                explode(Belt.children[i])
+                if(Belt.children[i].start<clock.getElapsedTime())
+                  explode(Belt.children[i])
 
               }
-              if ((Belt.children[i].start+0.5)<clock.getElapsedTime()){
+              if ((Belt.children[i].start+3)<clock.getElapsedTime()){
                 Belt.remove(Belt.children[i])
               }
             }
@@ -326,18 +456,20 @@
       raycaster.setFromCamera( mouse, camera );
 
       const intersection = raycaster.intersectObject( Belt );
-
+      //console.log(raycaster);
       if ( intersection.length > 0 ) {
 
         intersected = intersection[ 0 ];
-
+        //console.log(intersection);
+        return intersected
       }
+      return null;
     }
     /*============================Ateroid Feild=================================*/
     function loadInitAsteroid(){
       loader.load(
       // resource URL
-      '/astro/assets/astro2.glb',
+      '/assets/astro2.glb',
       // called when the resource is loaded
       function ( gltf ) {
         Belt.model = gltf.scene.clone()

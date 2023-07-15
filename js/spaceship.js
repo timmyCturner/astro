@@ -1,5 +1,6 @@
-import * as THREE from '/astro/node_modules/three/build/three.module.js';
-import { GLTFLoader } from '/astro/node_modules//three/examples/jsm/loaders/GLTFLoader.js';
+//import * as THREE from '/astro/node_modules/three/build/three.module.js';
+import * as THREE from '/node_modules/three/build/three.module.js';
+import { GLTFLoader } from '/node_modules//three/examples/jsm/loaders/GLTFLoader.js';
   export class SpaceShip {
 
   constructor(scene,ship){
@@ -10,7 +11,7 @@ import { GLTFLoader } from '/astro/node_modules//three/examples/jsm/loaders/GLTF
 
      loader.load(
     	// resource URL
-    	'/astro/assets/SPACE_Fin1.glb',
+    	'/assets/SPACE_Fin1.glb',
     	// called when the resource is loaded
     	function ( gltf ) {
         console.log(gltf.scene);

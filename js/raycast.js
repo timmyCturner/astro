@@ -132,5 +132,3 @@
       renderer.render( scene, camera );
 
     }
-
-    
