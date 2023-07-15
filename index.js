@@ -1,7 +1,7 @@
 
     import * as THREE from './node_modules/three/build/three.module.js';
     import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
-    import {SpaceShip} from './js/spaceship.js';
+    //import {SpaceShip} from './js/spaceship.js';
     import { GLTFLoader } from './node_modules/three/examples/jsm/loaders/GLTFLoader.js';
     let camera, scene, renderer, controls, clock;
     let Ship;
